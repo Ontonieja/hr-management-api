@@ -4,8 +4,31 @@ generator client {
 
 enum EmployeeRole {
   ADMIN
-  HR_MANAGER
+  MANAGER
   EMPLOYEE
+}
+
+enum CompanyType {
+  TECHNOLOGY
+  FINANCE
+  HEALTHCARE
+  EDUCATION
+  OTHER
+  MANUFACTURING
+  RETAIL
+  E_COMMERCE
+  CONSTRUCTION
+  TRANSPORTATION
+  HOSPITALITY
+  ENTERTAINMENT
+  ENERGY
+  LEGAL
+  GOVERNMENT
+  REAL_ESTATE
+  SPORTS
+  AGRICULTURE
+  MEDIA
+  NON_PROFIT
 }
 
 datasource db {
@@ -14,11 +37,11 @@ datasource db {
 }
 
 model Company {
-  id        Int        @id @default(autoincrement())
-  name      String
-  category  String
-  employees Employee[]
-  User      User[]
+  id          Int         @id @default(autoincrement())
+  name        String
+  companyType CompanyType
+  employees   Employee[]
+  User        User[]
 }
 
 model User {
@@ -29,8 +52,8 @@ model User {
   lastName  String
   role      EmployeeRole
   createdAt DateTime     @default(now())
-  Company   Company      @relation(fields: [companyId], references: [id])
-  companyId Int
+  Company   Company?     @relation(fields: [companyId], references: [id])
+  companyId Int?
 }
 
 model Employee {
