@@ -2,14 +2,22 @@ import express from "express";
 import userRoutes from "./routes/auth";
 import cookieParser from "cookie-parser";
 import errorHandler from "./middlewares/errorHandler";
-
+import cors from "cors";
 const app = express();
 
+const corsOptions = {
+  origin: process.env.CLIENT_URL,
+  credentials: true,
+};
+
+console.log(process.env.CLIENT_URL);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use("/auth", userRoutes);
+app.use(cors(corsOptions));
+
+app.use("/api/v1/auth", userRoutes);
 
 app.use(errorHandler);
 export default app;

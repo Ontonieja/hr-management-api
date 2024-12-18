@@ -10,7 +10,7 @@ interface JWTPayloadWithEmail extends JwtPayload {
 export default function isAuth(
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) {
   const token = req.headers.authorization?.split(" ")[1];
 
@@ -19,7 +19,7 @@ export default function isAuth(
   if (!token) throw new AppError(NO_HEADERS, "No acces token provided", 400);
 
   jwt.verify(token, process.env.JWT_SECRET as string, (error, decoded) => {
-    if (error) throw new AppError(UNAUTHORIZED, "User not authorized", 400);
+    if (error) throw new AppError(UNAUTHORIZED, "Unauthorized", 403);
     const payload = decoded as JWTPayloadWithEmail;
     next();
   });
