@@ -58,7 +58,7 @@ export const register = async (req: Request, res: Response) => {
     process.env.JWT_SECRET as string,
     {
       expiresIn: "2h",
-    },
+    }
   );
 
   const refreshToken = jwt.sign(
@@ -66,11 +66,16 @@ export const register = async (req: Request, res: Response) => {
     process.env.JWT_SECRET as string,
     {
       expiresIn: "7d",
-    },
+    }
   );
 
   return res.status(201).json({
     message: "User created successfully",
+    user: {
+      id: user.id,
+      firstName: user.firstName,
+      email: user.email,
+    },
     accessToken: accessToken,
     refreshToken: refreshToken,
   });
@@ -106,7 +111,7 @@ export const login = async (req: Request, res: Response) => {
     process.env.JWT_SECRET as string,
     {
       expiresIn: "2h",
-    },
+    }
   );
 
   const refreshToken = jwt.sign(
@@ -114,11 +119,16 @@ export const login = async (req: Request, res: Response) => {
     process.env.JWT_SECRET as string,
     {
       expiresIn: "7d",
-    },
+    }
   );
 
   return res.status(201).json({
     message: "User logged in successfully",
+    user: {
+      id: existingUser.id,
+      firstName: existingUser.firstName,
+      email: existingUser.email,
+    },
     accessToken: accessToken,
     refreshToken: refreshToken,
   });
@@ -144,7 +154,7 @@ export const refresh = async (req: Request, res: Response) => {
     const accessToken = jwt.sign(
       { email: payload.email, userId: payload.userId },
       process.env.JWT_SECRET as string,
-      { expiresIn: "2h" },
+      { expiresIn: "2h" }
     );
     return res.status(200).json({
       message: "Token refreshed successfully",
