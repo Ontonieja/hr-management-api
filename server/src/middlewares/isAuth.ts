@@ -6,14 +6,16 @@ import { ERROR_CODE } from "../constants/errorCodes";
 interface JWTPayloadWithEmail extends JwtPayload {
   email: string;
 }
+export interface RequestWithUser extends Request {
+  userId?: number;
+}
 
 export default function isAuth(
-  req: Request,
+  req: RequestWithUser,
   res: Response,
   next: NextFunction
 ) {
   const token = req.headers.authorization?.split(" ")[1];
-
   const { NO_HEADERS, UNAUTHORIZED } = ERROR_CODE;
 
   if (!token) throw new AppError(NO_HEADERS, "No acces token provided", 400);
@@ -21,6 +23,8 @@ export default function isAuth(
   jwt.verify(token, process.env.JWT_SECRET as string, (error, decoded) => {
     if (error) throw new AppError(UNAUTHORIZED, "Unauthorized", 403);
     const payload = decoded as JWTPayloadWithEmail;
+    console.log(payload);
+    req.userId = payload.userId as number;
     next();
   });
 }
