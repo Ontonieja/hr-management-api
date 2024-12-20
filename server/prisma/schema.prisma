@@ -37,11 +37,15 @@ datasource db {
 }
 
 model Company {
-  id          Int         @id @default(autoincrement())
-  name        String
-  companyType CompanyType
-  employees   Employee[]
-  User        User[]
+  id        Int         @id @default(autoincrement())
+  name      String
+  industry  CompanyType
+  address   String
+  city      String
+  zipCode   String
+  country   String
+  employees Employee[]
+  User      User[]
 }
 
 model User {
