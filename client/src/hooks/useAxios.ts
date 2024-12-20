@@ -1,9 +1,6 @@
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
+import axios from "@/axiosConfig";
 import { useState } from "react";
-
-const NODE_SERVER_URL = import.meta.env.VITE_NODE_SERVER_URL;
-
-axios.defaults.baseURL = NODE_SERVER_URL;
 
 interface ParamsProps {
   method: "GET" | "POST" | "PUT";

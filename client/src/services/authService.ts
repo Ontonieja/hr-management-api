@@ -23,7 +23,6 @@ export const useAuthService = () => {
       url: "/api/v1/auth/register",
       data: payload,
     });
-
     dispatch(setCredentials(data));
 
     return data;
@@ -37,7 +36,6 @@ export const useAuthService = () => {
     });
 
     dispatch(setCredentials(data));
-
     return data;
   };
 
