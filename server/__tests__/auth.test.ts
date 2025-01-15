@@ -1,14 +1,11 @@
 import request from "supertest";
+import { jest } from "@jest/globals";
 import app from "../src/app";
 
 import { prismaMock } from "../singleton";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { refreshToken } from "../src/controllers/auth";
-import { access } from "fs";
-import { before } from "node:test";
-import { error } from "console";
 
 jest.mock("../prisma/db");
 jest.mock("bcrypt");
@@ -33,7 +30,7 @@ describe("Register auth service", () => {
 
   it("should return 400 if required fields are missing", async () => {
     const res = await request(app)
-      .post("/auth/register")
+      .post("/api/v1/auth/register")
       .send({ email: "test@gmail.com" })
       .expect(400);
 
@@ -46,7 +43,7 @@ describe("Register auth service", () => {
     });
 
     const res = await request(app)
-      .post("/auth/register")
+      .post("/api/v1/auth/register")
       .send(req.body)
       .expect(400);
 
@@ -71,14 +68,13 @@ describe("Register auth service", () => {
       .mockReturnValueOnce(mockRefreshToken);
 
     const res = await request(app)
-      .post("/auth/register")
+      .post("/api/v1/auth/register")
       .send(req.body)
       .expect(201);
 
     expect(res.body).toMatchObject({
       message: "User created successfully",
       accessToken: mockAccessToken,
-      refreshToken: mockRefreshToken,
     });
   });
 
@@ -86,7 +82,7 @@ describe("Register auth service", () => {
     prismaMock.user.create.mockRejectedValue(new Error("Database error"));
 
     const res = await request(app)
-      .post("/auth/register")
+      .post("/api/v1/auth/register")
       .send(req.body)
       .expect(500);
 
@@ -106,7 +102,7 @@ describe("Login auth service", () => {
 
   it("should return 400 if required fields are missing", async () => {
     const res = await request(app)
-      .post("/auth/register")
+      .post("/api/v1/auth/register")
       .send({ email: "test@gmail.com" })
       .expect(400);
 
@@ -117,7 +113,7 @@ describe("Login auth service", () => {
     prismaMock.user.findFirst.mockResolvedValue(null);
 
     const res = await request(app)
-      .post("/auth/login")
+      .post("/api/v1/auth/login")
       .send(req.body)
       .expect(400);
 
@@ -145,14 +141,13 @@ describe("Login auth service", () => {
       .mockReturnValueOnce(mockRefreshToken);
 
     const res = await request(app)
-      .post("/auth/login")
+      .post("/api/v1/auth/login")
       .send(req.body)
       .expect(201);
 
     expect(res.body).toMatchObject({
       message: "User logged in successfully",
       accessToken: mockAccessToken,
-      refreshToken: mockRefreshToken,
     });
   });
 
@@ -167,7 +162,7 @@ describe("Login auth service", () => {
     (bcrypt.compare as jest.Mock).mockReturnValue(false);
 
     const res = await request(app)
-      .post("/auth/login")
+      .post("/api/v1/auth/login")
       .send(req.body)
       .expect(400);
 
@@ -195,7 +190,7 @@ describe("Login auth service", () => {
     it("should throw an error if refresh token is missing", async () => {
       req.headers["x-refresh-token"] = "";
 
-      const res = await request(app).post("/auth/refresh").expect(400);
+      const res = await request(app).post("/api/v1/auth/refresh").expect(400);
 
       expect(res.body).toMatchObject({
         message: "Headers must include refresh token",
@@ -206,33 +201,39 @@ describe("Login auth service", () => {
     it("should verify refresh token and return access token", async () => {
       (jwt.verify as jest.Mock).mockImplementation(
         (token, secret, callback) => {
-          callback(null, { email: "test@gmail.com", userId: 1 });
-        },
+          (callback as jwt.VerifyCallback)(null, {
+            email: "test@gmail.com",
+            userId: 1,
+          });
+        }
       );
 
       (jwt.sign as jest.Mock).mockReturnValue("mockAccessToken");
 
       const res = await request(app)
-        .post("/auth/refresh")
-        .set("x-refresh-token", req.headers["x-refresh-token"])
+        .post("/api/v1/auth/refresh")
+        .set("Cookie", [`refreshToken=mockRefreshToken`])
         .expect(200);
 
       expect(res.body).toMatchObject({
         message: "Token refreshed successfully",
         accessToken: "mockAccessToken",
       });
-    }); // Ustawienie dłuższego limitu czasu
+    });
 
     it("should return error if refresh token is invalid", async () => {
       (jwt.verify as jest.Mock).mockImplementation(
         (token, secret, callback) => {
-          callback(new Error("Invalid refresh token"), null);
-        },
+          (callback as jwt.VerifyCallback)(
+            new jwt.JsonWebTokenError("Invalid token"),
+            undefined
+          );
+        }
       );
 
       const res = await request(app)
-        .post("/auth/refresh")
-        .set("x-refresh-token", req.headers["x-refresh-token"])
+        .post("/api/v1/auth/refresh")
+        .set("Cookie", [`refreshToken=mockRefreshToken`])
         .expect(401);
 
       expect(res.body).toMatchObject({
@@ -251,13 +252,15 @@ describe("Login auth service", () => {
         },
       };
     });
-    it("should return error if no acces token is provided", async () => {
+    it("should return error if no access token is provided", async () => {
       req.headers.authorization = "";
 
-      const res = await request(app).get("/auth/protected-route").expect(400);
+      const res = await request(app)
+        .post("/api/v1/company/create-company")
+        .expect(401);
 
       expect(res.body).toMatchObject({
-        message: "No acces token provided",
+        message: "No access token provided",
         errorCode: 305,
       });
     });
@@ -265,14 +268,27 @@ describe("Login auth service", () => {
     it("should verify token and pass request to next middleware", async () => {
       (jwt.verify as jest.Mock).mockImplementation(
         (token, secret, callback) => {
-          callback(null, { email: "test@gmail.com", userId: 1 });
-        },
+          (callback as jwt.VerifyCallback)(null, {
+            email: "test@gmail.com",
+            userId: 1,
+          });
+        }
       );
 
       const res = await request(app)
-        .get("/auth/protected-route")
-        .set("authorization", req.headers.authorization)
-        .expect(200);
+        .post("/api/v1/company/create-company")
+        .set("authorization", "Bearer mockAccessToken")
+        .send({
+          companyName: "Test Company",
+          industry: "Tech",
+          address: "123 Street",
+          city: "CityName",
+          zip: "12345",
+          country: "CountryName",
+        })
+        .expect(201);
+
+      expect(res.body).toBeDefined();
     });
   });
 });
