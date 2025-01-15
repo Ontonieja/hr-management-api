@@ -29,7 +29,6 @@ export const authSlice = createSlice({
       action: PayloadAction<{ user?: User; accessToken?: string }>
     ) => {
       const { user, accessToken } = action.payload;
-      console.log(`user: ${user}, accessToken: ${accessToken}`);
       if (accessToken) {
         localStorage.setItem("accessToken", accessToken);
         state.accessToken = accessToken;

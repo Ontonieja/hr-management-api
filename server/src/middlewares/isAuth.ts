@@ -15,16 +15,25 @@ export default function isAuth(
   res: Response,
   next: NextFunction
 ) {
-  const token = req.headers.authorization?.split(" ")[1];
   const { NO_HEADERS, UNAUTHORIZED } = ERROR_CODE;
 
-  if (!token) throw new AppError(NO_HEADERS, "No acces token provided", 400);
+  if (!req.headers || !req.headers.authorization) {
+    return next(new AppError(NO_HEADERS, "No access token provided", 401));
+  }
+
+  const token = req.headers.authorization.split(" ")[1];
+
+  if (!token) {
+    return next(new AppError(NO_HEADERS, "No access token provided", 401));
+  }
 
   jwt.verify(token, process.env.JWT_SECRET as string, (error, decoded) => {
-    if (error) throw new AppError(UNAUTHORIZED, "Unauthorized", 403);
+    if (error) {
+      return next(new AppError(UNAUTHORIZED, "Unauthorized", 403));
+    }
+
     const payload = decoded as JWTPayloadWithEmail;
-    console.log(payload);
-    req.userId = payload.userId as number;
+    req.userId = payload.userId;
     next();
   });
 }

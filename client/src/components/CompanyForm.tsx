@@ -7,7 +7,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useAuthService } from "@/services/authService";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -54,7 +53,7 @@ export default function CompanyForm() {
     const result = await createCompany(values);
 
     if (result) {
-      console.log("hehehe");
+      navigate("/dashboard");
     } else {
       console.log(error);
     }

@@ -86,11 +86,6 @@ export const register = async (req: Request, res: Response) => {
     })
     .json({
       message: "User created successfully",
-      user: {
-        id: user.id,
-        firstName: user.firstName,
-        email: user.email,
-      },
       accessToken: accessToken,
     });
 };
@@ -134,6 +129,10 @@ export const login = async (req: Request, res: Response) => {
     }
   );
 
+  const company = await db.company.findUnique({
+    where: { userId: existingUser.id },
+  });
+
   return res
     .status(201)
     .cookie("refreshToken", refreshToken, {
@@ -144,11 +143,6 @@ export const login = async (req: Request, res: Response) => {
     })
     .json({
       message: "User logged in successfully",
-      user: {
-        id: existingUser.id,
-        firstName: existingUser.firstName,
-        email: existingUser.email,
-      },
       accessToken: accessToken,
     });
 };
@@ -186,18 +180,33 @@ export const getUserInfo = async (req: RequestWithUser, res: Response) => {
 
   if (!userId) throw new AppError(UNAUTHORIZED, "Unauthorized", 403);
 
-  const user = await db.user.findUnique({
+  const existingUser = await db.user.findUnique({
     where: { id: userId },
   });
 
-  if (!user) throw new AppError(USER_NOT_FOUND, "User not found", 404);
+  const company = await db.company.findUnique({
+    where: { userId: userId },
+  });
+
+  if (!existingUser) throw new AppError(USER_NOT_FOUND, "User not found", 404);
 
   return res.status(200).json({
     message: "User info fetched successfully",
     user: {
-      id: user.id,
-      firstName: user.firstName,
-      email: user.email,
+      id: existingUser.id,
+      firstName: existingUser.firstName,
+      email: existingUser.email,
+      company: company
+        ? {
+            id: company.id,
+            name: company.name,
+            industry: company.industry,
+            address: company.address,
+            city: company.city,
+            zipCode: company.zipCode,
+            country: company.country,
+          }
+        : null,
     },
   });
 };

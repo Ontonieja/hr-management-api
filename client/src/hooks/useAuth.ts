@@ -9,9 +9,8 @@ export const useAuth = () => {
   const token = useSelector((state: RootState) => state.auth.accessToken);
 
   useEffect(() => {
+    if (!token) dispatch(logOut());
     const fetchUserInfo = async () => {
-      if (!token) return;
-
       try {
         const { data } = await api.get("/api/v1/auth/user-info");
         dispatch(setCredentials(data));

@@ -10,10 +10,6 @@ export default function ProtectedRoute({
   const user = useSelector(selectCurrentUser);
   const authenticating = useSelector(isAuthenticating);
 
-  if (authenticating) {
-    return <div>Loading...</div>; // Or your loading component
-  }
-
-  if (!user) return <Navigate to="/auth" replace />;
+  if (!user && !authenticating) return <Navigate to="/auth" replace />;
   return children;
 }
