@@ -3,8 +3,6 @@ import { RequestWithUser } from "../middlewares/isAuth";
 import db from "../../prisma/db";
 import AppError from "../utils/AppError";
 import { ERROR_CODE } from "../constants/errorCodes";
-import { create } from "domain";
-import { connect } from "http2";
 
 const { UNAUTHORIZED, INVALID_REQUEST_BODY } = ERROR_CODE;
 export const createCompanyService = async (
@@ -14,9 +12,22 @@ export const createCompanyService = async (
   const { companyName, industry, address, city, zip, country } = req.body;
   const { userId } = req;
 
-  if (!userId) throw new AppError(UNAUTHORIZED, "Unauthorized", 403);
-
+  if (!userId) throw new AppError(UNAUTHORIZED, "Unauthorized", 401);
   if (!companyName || !industry || !address || !city || !zip || !country) {
-    throw new AppError(UNAUTHORIZED, "Missing required fields", 400);
+    throw new AppError(INVALID_REQUEST_BODY, "Missing required fields", 400);
   }
+
+  const company = await db.company.create({
+    data: {
+      name: companyName,
+      industry,
+      address,
+      city,
+      zipCode: zip,
+      country,
+      userId,
+    },
+  });
+
+  return res.status(201).json({ message: "Company created successfully" });
 };
