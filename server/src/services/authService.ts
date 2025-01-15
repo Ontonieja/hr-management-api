@@ -5,6 +5,7 @@ import db from "../../prisma/db";
 import AppError from "../utils/AppError";
 import { ERROR_CODE } from "../constants/errorCodes";
 import z, { ZodError } from "zod";
+import { RequestWithUser } from "../middlewares/isAuth";
 
 const userSchema = z.object({
   email: z.string().email({ message: "Invalid email format" }),
@@ -21,10 +22,16 @@ const userSchema = z.object({
     .optional(),
 });
 
+const {
+  NO_HEADERS,
+  UNAUTHORIZED,
+  INVALID_REQUEST_BODY,
+  ALREADY_EXISTS,
+  USER_NOT_FOUND,
+} = ERROR_CODE;
+
 export const register = async (req: Request, res: Response) => {
   const { email, password, firstName, lastName } = req.body;
-
-  const { INVALID_REQUEST_BODY, ALREADY_EXISTS } = ERROR_CODE;
 
   try {
     userSchema.parse({ email, password, firstName, lastName });
@@ -69,22 +76,22 @@ export const register = async (req: Request, res: Response) => {
     }
   );
 
-  return res.status(201).json({
-    message: "User created successfully",
-    user: {
-      id: user.id,
-      firstName: user.firstName,
-      email: user.email,
-    },
-    accessToken: accessToken,
-    refreshToken: refreshToken,
-  });
+  return res
+    .status(201)
+    .cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
+    .json({
+      message: "User created successfully",
+      accessToken: accessToken,
+    });
 };
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-
-  const { INVALID_REQUEST_BODY, USER_NOT_FOUND } = ERROR_CODE;
 
   try {
     userSchema.parse({ email, password });
@@ -110,7 +117,7 @@ export const login = async (req: Request, res: Response) => {
     { email, userId: existingUser.id },
     process.env.JWT_SECRET as string,
     {
-      expiresIn: "2h",
+      expiresIn: "15min",
     }
   );
 
@@ -122,22 +129,27 @@ export const login = async (req: Request, res: Response) => {
     }
   );
 
-  return res.status(201).json({
-    message: "User logged in successfully",
-    user: {
-      id: existingUser.id,
-      firstName: existingUser.firstName,
-      email: existingUser.email,
-    },
-    accessToken: accessToken,
-    refreshToken: refreshToken,
+  const company = await db.company.findUnique({
+    where: { userId: existingUser.id },
   });
+
+  return res
+    .status(201)
+    .cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
+    .json({
+      message: "User logged in successfully",
+      accessToken: accessToken,
+    });
 };
 
 export const refresh = async (req: Request, res: Response) => {
-  const { NO_HEADERS, UNAUTHORIZED } = ERROR_CODE;
-
-  const refreshToken = req.headers["x-refresh-token"] as string;
+  const refreshToken = req.cookies["refreshToken"] as string;
+  console.log(refreshToken);
 
   if (!refreshToken) {
     throw new AppError(NO_HEADERS, "Headers must include refresh token", 400);
@@ -160,5 +172,41 @@ export const refresh = async (req: Request, res: Response) => {
       message: "Token refreshed successfully",
       accessToken: accessToken,
     });
+  });
+};
+
+export const getUserInfo = async (req: RequestWithUser, res: Response) => {
+  const userId = req.userId;
+
+  if (!userId) throw new AppError(UNAUTHORIZED, "Unauthorized", 403);
+
+  const existingUser = await db.user.findUnique({
+    where: { id: userId },
+  });
+
+  const company = await db.company.findUnique({
+    where: { userId: userId },
+  });
+
+  if (!existingUser) throw new AppError(USER_NOT_FOUND, "User not found", 404);
+
+  return res.status(200).json({
+    message: "User info fetched successfully",
+    user: {
+      id: existingUser.id,
+      firstName: existingUser.firstName,
+      email: existingUser.email,
+      company: company
+        ? {
+            id: company.id,
+            name: company.name,
+            industry: company.industry,
+            address: company.address,
+            city: company.city,
+            zipCode: company.zipCode,
+            country: company.country,
+          }
+        : null,
+    },
   });
 };
