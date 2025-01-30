@@ -4,6 +4,8 @@ import { RootState } from "./store";
 interface User {
   id: number;
   firstName: string;
+  lastName: string;
+  role: string;
   email: string;
 }
 interface AuthState {
@@ -40,6 +42,7 @@ export const authSlice = createSlice({
       localStorage.removeItem("accessToken");
       state.user = null;
       state.accessToken = null;
+      state.isAuthenticating = false;
     },
   },
 });

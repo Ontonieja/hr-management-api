@@ -12,7 +12,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { FormFieldWrapper } from "./FormFieldWrapper";
 import {
   Select,
   SelectContent,
@@ -22,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import companyTypes from "@/constants/companyType";
 import { useCompanyService } from "@/services/companyService";
+import { FormFieldWrapper } from "@/components/FormFieldWrapper";
 
 const formSchema = z.object({
   companyName: z.string().min(1, { message: "Company name is required" }),

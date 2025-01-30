@@ -23,12 +23,12 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 403 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
         const { data } = await api.post("/api/v1/auth/refresh");
         store.dispatch(setCredentials({ accessToken: data.accessToken }));
-
+        console.log("hahaha");
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
         return api(originalRequest);
       } catch {

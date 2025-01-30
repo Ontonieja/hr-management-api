@@ -1,42 +1,48 @@
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { useAuthService } from "@/services/authService";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { FormFieldWrapper } from "./FormFieldWrapper";
+
+import { useNavigate } from "react-router-dom";
+import { useAuthService } from "@/services/authService";
+import { FormFieldWrapper } from "../../components/FormFieldWrapper";
 
 const formSchema = z.object({
   email: z.string().email(),
   password: z
     .string()
     .min(6, { message: "Password must contains at least 6 character" }),
+  firstName: z.string().min(1, { message: "First  name is required" }),
+  lastName: z.string().min(1, { message: "Last name is required" }),
 });
 
-export default function LoginForm() {
+export default function RegisterForm() {
+  const { register, isLoading, error } = useAuthService();
+
   const navigate = useNavigate();
-  const { login, isLoading, error } = useAuthService();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
       password: "",
+      firstName: "",
+      lastName: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const result = await login(values);
+    const result = await register(values);
 
     if (result) {
-      navigate("/dashboard");
+      console.log(result);
+      navigate("/company");
     } else {
       console.log(error);
     }
   }
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -44,7 +50,7 @@ export default function LoginForm() {
           name="email"
           control={form.control}
           label="Email"
-          placeholder="Enter your email..."
+          placeholder="Enter your company name..."
         />
         <FormFieldWrapper
           name="password"
@@ -53,10 +59,22 @@ export default function LoginForm() {
           placeholder="Enter your password..."
           type="password"
         />
-        {error && !isLoading && <p className="text-red-500">{error}</p>}
+        <FormFieldWrapper
+          name="firstName"
+          control={form.control}
+          label="First name"
+          placeholder="Enter your first name..."
+        />
+        <FormFieldWrapper
+          name="lastName"
+          control={form.control}
+          label="Last name"
+          placeholder="Enter your last name..."
+        />
+        {!isLoading && error && <p className="text-red-500">{error}</p>}
         <div className="mt-4 w-full">
           <Button className="w-full" type="submit" disabled={isLoading}>
-            {isLoading ? "Logging in..." : "Login"}
+            {isLoading ? "Registering..." : "Register"}
           </Button>
         </div>
       </form>

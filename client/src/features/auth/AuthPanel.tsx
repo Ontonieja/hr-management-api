@@ -1,4 +1,4 @@
-import { Tabs, TabsContent, TabsTrigger } from "./ui/tabs";
+import { Tabs, TabsContent, TabsTrigger } from "../../components/ui/tabs";
 import { TabsList } from "@radix-ui/react-tabs";
 import {
   Card,
@@ -6,10 +6,10 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card";
+} from "../../components/ui/card";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
-import loginImg from "../assets/loginImg.svg";
+import loginImg from "../../assets/loginImg.svg";
 
 export default function AuthPanel() {
   return (

@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
-import axios from "@/axiosConfig";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import api from "@/axiosConfig";
 
 interface ParamsProps {
   method: "GET" | "POST" | "PUT";
@@ -13,12 +13,13 @@ export default function useAxios<T>() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>();
 
-  const fetchData = async (params: ParamsProps) => {
+  const fetchData = useCallback(async (params: ParamsProps) => {
     setIsLoading(true);
     setError(null);
+    setResponse(null);
 
     try {
-      const result = await axios.request({
+      const result = await api.request({
         method: params.method,
         url: params.url,
         data: params.data,
@@ -27,14 +28,14 @@ export default function useAxios<T>() {
       return result.data;
     } catch (err) {
       if (err instanceof AxiosError) {
-        setError(err.response?.data.message);
+        setError(err.response?.data?.message || "Unknown error from server");
       } else {
-        setError("An unexpecetd error ocured");
+        setError("An unexpected error occurred");
       }
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   return { response, isLoading, error, fetchData };
 }

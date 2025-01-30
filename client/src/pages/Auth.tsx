@@ -1,4 +1,4 @@
-import AuthPanel from "@/components/AuthPanel";
+import AuthPanel from "@/features/auth/AuthPanel";
 
 export default function Auth() {
   return (
