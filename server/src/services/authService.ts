@@ -184,10 +184,6 @@ export const getUserInfo = async (req: RequestWithUser, res: Response) => {
     where: { id: userId },
   });
 
-  const company = await db.company.findUnique({
-    where: { userId: userId },
-  });
-
   if (!existingUser) throw new AppError(USER_NOT_FOUND, "User not found", 404);
 
   return res.status(200).json({
@@ -195,18 +191,9 @@ export const getUserInfo = async (req: RequestWithUser, res: Response) => {
     user: {
       id: existingUser.id,
       firstName: existingUser.firstName,
+      lastName: existingUser.lastName,
+      role: existingUser.role,
       email: existingUser.email,
-      company: company
-        ? {
-            id: company.id,
-            name: company.name,
-            industry: company.industry,
-            address: company.address,
-            city: company.city,
-            zipCode: company.zipCode,
-            country: company.country,
-          }
-        : null,
     },
   });
 };
