@@ -1,12 +1,11 @@
-import { selectCurrentUser } from "@/store/authSlice";
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import DashboardLayout from "@/components/DashboardLayout";
 
 export default function Dashboard() {
-  const user = useSelector(selectCurrentUser);
-
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
-  return <h1>Hello world</h1>;
+  return (
+    <DashboardLayout>
+      <div>
+        <h1>Dashbaord</h1>
+      </div>
+    </DashboardLayout>
+  );
 }
