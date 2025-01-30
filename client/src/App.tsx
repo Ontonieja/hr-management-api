@@ -6,7 +6,11 @@ import { router } from "./router";
 const App: React.FC = () => {
   useAuth();
 
-  return <RouterProvider router={router} />;
+  return (
+    <div className="font-nunito">
+      <RouterProvider router={router} />
+    </div>
+  );
 };
 
 export default App;
