@@ -28,7 +28,7 @@ export default function TopNavigation() {
   }, [handleClickOutside]);
 
   return (
-    <section className="flex max-md:justify-between items-center text-sm gap-6 border-b pb-4 border-slate-200 mb-4">
+    <section className="flex max-md:justify-between items-center text-sm gap-6 border-b pb-4 border-slate-200">
       <Logo />
       <MobileMenu open={open} setOpen={setOpen} menuRef={menuRef} />
       <SearchBar />
