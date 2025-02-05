@@ -13,11 +13,8 @@ import loginImg from "../../assets/loginImg.svg";
 
 export default function AuthPanel() {
   return (
-    <Tabs
-      defaultValue="login"
-      className="w-[90svw] sm:w-[80svw] md:w-[70svw] 2xl:w-[60svw]"
-    >
-      <div className="flex justify-around gap-8 items-center flex-row-reverse">
+    <Tabs defaultValue="login" className="w-[90svw] sm:w-[80svw] md:w-[70svw]">
+      <div className="flex justify-around gap-14 items-center flex-row-reverse">
         <div className="w-1/2 max-md:hidden">
           <img src={loginImg} className=""></img>
         </div>
