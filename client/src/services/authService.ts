@@ -1,6 +1,12 @@
-import useAxios from "@/hooks/useAxios";
-import { setCredentials } from "@/store/authSlice";
+import api from "@/axiosConfig";
+import { toast } from "react-toastify";
+import { setCredentials, logOut } from "@/store/authSlice";
+import { useMutation } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import useErrorHandler from "@/hooks/useErrorHandler";
+import { useAuthQueryOptions } from "@/queryOptions/authQueryOptions";
+import { useQuery } from "@tanstack/react-query";
 
 interface RegisterProps {
   email: string;
@@ -13,31 +19,74 @@ interface LoginProps {
   email: string;
   password: string;
 }
-export const useAuthService = () => {
-  const { fetchData, isLoading, error } = useAxios();
+
+interface AuthResponse {
+  token: string;
+  user: {
+    id: number;
+    email: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+  };
+}
+
+export const useLogin = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const register = async (payload: RegisterProps) => {
-    const data = await fetchData({
-      method: "POST",
-      url: "/api/v1/auth/register",
-      data: payload,
-    });
-    dispatch(setCredentials(data));
+  const { handleAxiosError } = useErrorHandler();
 
-    return data;
-  };
+  return useMutation({
+    mutationKey: ["login"],
+    mutationFn: login,
+    onSuccess: (data) => {
+      dispatch(setCredentials(data));
+      navigate("/dashboard");
+    },
+    onError: (error) => {
+      dispatch(logOut());
+      toast.error(handleAxiosError(error));
+    },
+  });
+};
 
-  const login = async (payload: LoginProps) => {
-    const data = await fetchData({
-      method: "POST",
-      url: "/api/v1/auth/login",
-      data: payload,
-    });
+export const useRegister = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { handleAxiosError } = useErrorHandler();
 
-    dispatch(setCredentials(data));
-    return data;
-  };
+  return useMutation({
+    mutationKey: ["register"],
+    mutationFn: register,
+    onSuccess: (data) => {
+      dispatch(setCredentials(data));
+      navigate("/company");
+    },
+    onError: (error) => {
+      toast.error(handleAxiosError(error));
+    },
+  });
+};
 
-  return { register, login, isLoading, error };
+export const useUserInfo = () => {
+  const dispatch = useDispatch();
+
+  const { data, isPending, error } = useQuery(useAuthQueryOptions());
+  if (error) {
+    console.error("Failed to fetch user info:", error);
+    dispatch(logOut());
+  }
+
+  if (data && !isPending) dispatch(setCredentials(data));
+};
+
+const login = async (payload: LoginProps): Promise<AuthResponse> => {
+  const { data } = await api.post("/api/v1/auth/login", payload);
+  return data;
+};
+
+const register = async (payload: RegisterProps): Promise<AuthResponse> => {
+  const { data } = await api.post("/api/v1/auth/register", payload);
+  return data;
 };

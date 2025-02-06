@@ -1,4 +1,8 @@
-import useAxios from "@/hooks/useAxios";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import api from "@/axiosConfig";
+import useErrorHandler from "@/hooks/useErrorHandler";
+import { toast } from "react-toastify";
 
 interface CompanyProps {
   companyName: string;
@@ -8,17 +12,28 @@ interface CompanyProps {
   country: string;
   zip: string;
 }
-export const useCompanyService = () => {
-  const { fetchData, error, isLoading } = useAxios();
-  const createCompany = async (data: CompanyProps) => {
-    const result = await fetchData({
-      url: "/api/v1/company/create-company",
-      method: "POST",
-      data,
-    });
 
-    return result;
-  };
+interface CompanyCreateResponse {
+  message: string;
+}
+export const useCompanyCreate = () => {
+  const navigate = useNavigate();
+  const { handleAxiosError } = useErrorHandler();
 
-  return { createCompany, error, isLoading };
+  return useMutation({
+    mutationKey: ["create-company"],
+    mutationFn: createCompany,
+    onSuccess: () => {
+      navigate("/dashboard");
+    },
+    onError: (error) => {
+      toast.error(handleAxiosError(error));
+    },
+  });
+};
+const createCompany = async (
+  payload: CompanyProps
+): Promise<CompanyCreateResponse> => {
+  const { data } = await api.post("/api/v1/company/create-company", payload);
+  return data;
 };

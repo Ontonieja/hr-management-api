@@ -1,15 +1,19 @@
 import React from "react";
 import { RouterProvider } from "react-router-dom";
-import useAuth from "@/hooks/useAuth";
+import { useUserInfo } from "@/services/authService";
 import { router } from "./router";
+import { ToastContainer } from "react-toastify";
 
 const App: React.FC = () => {
-  useAuth();
+  useUserInfo();
 
   return (
-    <div className="font-nunito">
-      <RouterProvider router={router} />
-    </div>
+    <>
+      <ToastContainer position="bottom-right" autoClose={3000} />
+      <div className="font-nunito">
+        <RouterProvider router={router} />
+      </div>
+    </>
   );
 };
 

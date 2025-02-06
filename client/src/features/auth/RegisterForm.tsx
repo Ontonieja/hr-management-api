@@ -5,8 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { useNavigate } from "react-router-dom";
-import { useAuthService } from "@/services/authService";
+import { useRegister } from "@/services/authService";
 import { FormFieldWrapper } from "../../components/FormFieldWrapper";
 
 const formSchema = z.object({
@@ -19,9 +18,7 @@ const formSchema = z.object({
 });
 
 export default function RegisterForm() {
-  const { register, isLoading, error } = useAuthService();
-
-  const navigate = useNavigate();
+  const { mutate, isPending, error } = useRegister();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -34,14 +31,7 @@ export default function RegisterForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const result = await register(values);
-
-    if (result) {
-      console.log(result);
-      navigate("/company");
-    } else {
-      console.log(error);
-    }
+    mutate(values);
   }
   return (
     <Form {...form}>
@@ -71,10 +61,10 @@ export default function RegisterForm() {
           label="Last name"
           placeholder="Enter your last name..."
         />
-        {!isLoading && error && <p className="text-red-500">{error}</p>}
+        {!isPending && error && <p className="text-red-500">{error.message}</p>}
         <div className="mt-4 w-full">
-          <Button className="w-full" type="submit" disabled={isLoading}>
-            {isLoading ? "Registering..." : "Register"}
+          <Button className="w-full" type="submit" disabled={isPending}>
+            {isPending ? "Registering..." : "Register"}
           </Button>
         </div>
       </form>
