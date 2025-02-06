@@ -10,7 +10,6 @@ import {
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import {
   Select,
@@ -20,8 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import companyTypes from "@/constants/companyType";
-import { useCompanyService } from "@/services/companyService";
 import { FormFieldWrapper } from "@/components/FormFieldWrapper";
+import { useCompanyCreate } from "@/services/companyService";
 
 const formSchema = z.object({
   companyName: z.string().min(1, { message: "Company name is required" }),
@@ -33,8 +32,7 @@ const formSchema = z.object({
 });
 
 export default function CompanyForm() {
-  const navigate = useNavigate();
-  const { createCompany, isLoading, error } = useCompanyService();
+  const { isPending, mutate } = useCompanyCreate();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,14 +47,7 @@ export default function CompanyForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    const result = await createCompany(values);
-
-    if (result) {
-      navigate("/dashboard");
-    } else {
-      console.log(error);
-    }
+    mutate(values);
   }
 
   return (
@@ -122,10 +113,9 @@ export default function CompanyForm() {
           label="Country"
           placeholder="Enter your country..."
         />
-        {error && !isLoading && <p className="text-red-500">{error}</p>}
         <div className="mt-4 w-full">
-          <Button className="w-full" type="submit" disabled={isLoading}>
-            {isLoading ? "Submitting..." : "Submit"}
+          <Button className="w-full" type="submit" disabled={isPending}>
+            {isPending ? "Submitting..." : "Submit"}
           </Button>
         </div>
       </form>

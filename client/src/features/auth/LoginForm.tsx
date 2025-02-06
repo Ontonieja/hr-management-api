@@ -1,10 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { useAuthService } from "@/services/authService";
-
+import { useLogin } from "@/services/authService";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { FormFieldWrapper } from "../../components/FormFieldWrapper";
 
@@ -16,8 +14,7 @@ const formSchema = z.object({
 });
 
 export default function LoginForm() {
-  const navigate = useNavigate();
-  const { login, isLoading, error } = useAuthService();
+  const { mutate, isPending } = useLogin();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -27,14 +24,8 @@ export default function LoginForm() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const result = await login(values);
-
-    if (result) {
-      navigate("/dashboard");
-    } else {
-      console.log(error);
-    }
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    mutate(values);
   }
 
   return (
@@ -53,10 +44,9 @@ export default function LoginForm() {
           placeholder="Enter your password..."
           type="password"
         />
-        {error && !isLoading && <p className="text-red-500">{error}</p>}
         <div className="mt-4 w-full">
-          <Button className="w-full" type="submit" disabled={isLoading}>
-            {isLoading ? "Logging in..." : "Login"}
+          <Button className="w-full" type="submit" disabled={isPending}>
+            {isPending ? "Logging in..." : "Login"}
           </Button>
         </div>
       </form>

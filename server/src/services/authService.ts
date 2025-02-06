@@ -87,6 +87,13 @@ export const register = async (req: Request, res: Response) => {
     .json({
       message: "User created successfully",
       accessToken: accessToken,
+      user: {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        email: user.email,
+      },
     });
 };
 
@@ -144,6 +151,13 @@ export const login = async (req: Request, res: Response) => {
     .json({
       message: "User logged in successfully",
       accessToken: accessToken,
+      user: {
+        id: existingUser.id,
+        firstName: existingUser.firstName,
+        lastName: existingUser.lastName,
+        role: existingUser.role,
+        email: existingUser.email,
+      },
     });
 };
 
