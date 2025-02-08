@@ -81,12 +81,14 @@ export const useUserInfo = () => {
   if (data && !isPending) dispatch(setCredentials(data));
 };
 
-const login = async (payload: LoginProps): Promise<AuthResponse> => {
-  const { data } = await api.post("/api/v1/auth/login", payload);
-  return data;
-};
+const login = (payload: LoginProps) => authRequest(payload, "login");
 
-const register = async (payload: RegisterProps): Promise<AuthResponse> => {
-  const { data } = await api.post("/api/v1/auth/register", payload);
+const register = (payload: RegisterProps) => authRequest(payload, "register");
+
+const authRequest = async (
+  payload: RegisterProps | LoginProps,
+  endpoint: string
+) => {
+  const { data } = await api.post(`/api/v1/auth/${endpoint}`, payload);
   return data;
 };
