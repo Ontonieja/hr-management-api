@@ -5,7 +5,7 @@ export function useAuthQueryOptions() {
   return queryOptions({
     queryKey: ["use-auth"],
     queryFn: useAuth,
-    retry: false,
+    retry: 2,
   });
 }
 

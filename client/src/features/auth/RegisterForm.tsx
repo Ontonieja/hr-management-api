@@ -41,6 +41,7 @@ export default function RegisterForm() {
           control={form.control}
           label="Email"
           placeholder="Enter your company name..."
+          disabled={isPending}
         />
         <FormFieldWrapper
           name="password"
@@ -48,18 +49,21 @@ export default function RegisterForm() {
           label="Password"
           placeholder="Enter your password..."
           type="password"
+          disabled={isPending}
         />
         <FormFieldWrapper
           name="firstName"
           control={form.control}
           label="First name"
           placeholder="Enter your first name..."
+          disabled={isPending}
         />
         <FormFieldWrapper
           name="lastName"
           control={form.control}
           label="Last name"
           placeholder="Enter your last name..."
+          disabled={isPending}
         />
         {!isPending && error && <p className="text-red-500">{error.message}</p>}
         <div className="mt-4 w-full">

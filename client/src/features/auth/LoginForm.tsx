@@ -36,6 +36,7 @@ export default function LoginForm() {
           control={form.control}
           label="Email"
           placeholder="Enter your email..."
+          disabled={isPending}
         />
         <FormFieldWrapper
           name="password"
@@ -43,6 +44,7 @@ export default function LoginForm() {
           label="Password"
           placeholder="Enter your password..."
           type="password"
+          disabled={isPending}
         />
         <div className="mt-4 w-full">
           <Button className="w-full" type="submit" disabled={isPending}>

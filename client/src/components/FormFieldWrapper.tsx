@@ -14,6 +14,7 @@ interface FormFieldWrapperProps<TFieldValues extends FieldValues> {
   label: string;
   placeholder?: string;
   type?: string;
+  disabled?: boolean;
 }
 
 export function FormFieldWrapper<TFieldValues extends FieldValues>({
@@ -22,6 +23,7 @@ export function FormFieldWrapper<TFieldValues extends FieldValues>({
   label,
   placeholder = "",
   type = "text",
+  disabled = false,
 }: FormFieldWrapperProps<TFieldValues>) {
   return (
     <FormField
@@ -31,7 +33,12 @@ export function FormFieldWrapper<TFieldValues extends FieldValues>({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Input placeholder={placeholder} {...field} type={type} />
+            <Input
+              placeholder={placeholder}
+              {...field}
+              type={type}
+              disabled={disabled}
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
