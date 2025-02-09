@@ -5,25 +5,19 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-  { month: "July", desktop: 214 },
-  { month: "August", desktop: 214 },
-  { month: "September", desktop: 214 },
-  { month: "October", desktop: 214 },
-];
+import { useDashboardContext } from "@/hooks/useDashboardContext";
+
 const chartConfig = {
   desktop: {
     label: "Employees",
     color: "#6f52f4",
   },
 } satisfies ChartConfig;
+
 export function DashboardBarChart() {
+  const { data } = useDashboardContext();
+  const { barChartData } = data!;
+
   return (
     <div className="h-full w-full overflow-hidden">
       <div className="flex pt-6 px-8 justify-between mb-4">
@@ -38,7 +32,7 @@ export function DashboardBarChart() {
           config={chartConfig}
           className="max-h-[150px] 2xl:max-h-[230px] w-full"
         >
-          <BarChart accessibilityLayer data={chartData}>
+          <BarChart accessibilityLayer data={barChartData}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"
@@ -52,7 +46,7 @@ export function DashboardBarChart() {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={12} />
+            <Bar dataKey="employees" fill="var(--color-desktop)" radius={12} />
           </BarChart>
         </ChartContainer>
       </div>

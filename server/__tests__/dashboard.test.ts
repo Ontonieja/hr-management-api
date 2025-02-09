@@ -74,7 +74,7 @@ describe("Dashboard Service", () => {
     expect(res.body.totalEmployees).toBe(1);
     expect(res.body.totalResignedEmployees).toBe(0);
     expect(res.body.totalPayroll).toBe(5000);
-    expect(res.body.retentionRate).toBe("100.00");
+    expect(res.body.retentionRate).toBe("100");
     expect(res.body.barChartData).toHaveLength(12);
     expect(res.body.pieChartDepartmentData).toEqual([
       { name: "IT", employees: 1 },

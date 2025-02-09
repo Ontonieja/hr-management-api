@@ -13,7 +13,7 @@ export default function DashboardLayout({
         <section className="flex flex-1 sm:mt-4 overflow-y-auto">
           <LeftSidebar />
 
-          <main className="md:px-8 py-2 flex-1">{children}</main>
+          <main className="md:px-8 py-2 flex-1 relative">{children}</main>
         </section>
       </div>
     </div>
