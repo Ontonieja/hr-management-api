@@ -32,7 +32,11 @@ export const getDashboardService = async (
       position: true,
       status: true,
       payroll: true,
-      departmentId: true,
+      Department: {
+        select: {
+          name: true,
+        },
+      },
       createdAt: true,
       resignedAt: true,
     },
@@ -50,10 +54,12 @@ export const getDashboardService = async (
     0
   );
 
-  const retentionRate = (
-    ((totalEmployees - totalResignedEmployees) / totalEmployees) *
-    100
-  ).toFixed(2);
+  const retentionRate =
+    totalEmployees &&
+    (
+      ((totalEmployees - totalResignedEmployees) / totalEmployees) *
+      100
+    ).toFixed(0);
 
   const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "long" });
 
