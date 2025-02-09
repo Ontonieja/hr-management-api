@@ -1,20 +1,21 @@
-import { EmployeesDataProps } from "@/constants/employeesData";
+import { EmployeesProps } from "@/types/employees";
 import { ColumnDef } from "@tanstack/react-table";
 
-export const columns: ColumnDef<EmployeesDataProps>[] = [
+export const columns: ColumnDef<EmployeesProps>[] = [
   {
     accessorKey: "name",
     header: "Employee Name",
     cell: ({ row }) => {
       const employee = row.original;
+
       return (
         <div className="flex items-center space-x-3">
           <img
-            src={employee.avatar}
+            src="https://randomuser.me/api/portraits/men/1.jpg"
             alt="avatar"
             className="size-7 rounded-full"
           />
-          <span>{employee.name}</span>
+          <span>{`${employee.firstName} ${employee.lastName}`}</span>
         </div>
       );
     },
@@ -26,21 +27,28 @@ export const columns: ColumnDef<EmployeesDataProps>[] = [
   {
     accessorKey: "department",
     header: "Department",
+    cell: ({ row }) => {
+      const employee = row.original;
+
+      return <span>{employee.Department.name}</span>;
+    },
   },
   {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
       const employee = row.original;
+      const formattedEmployeeStatus =
+        employee.status[0] + employee.status.slice(1).toLowerCase();
       return (
         <span
           className={`px-2 py-1 rounded-full text-xs ${
-            employee.status === "Active"
+            employee.status === "ACTIVE"
               ? "bg-green-100 text-green-600"
               : "bg-red-100 text-red-600"
           }`}
         >
-          {employee.status}
+          {formattedEmployeeStatus}
         </span>
       );
     },

@@ -1,9 +1,14 @@
 import { DataTable } from "@/components/DataTable";
 import { columns } from "./columns";
-import { employeesData } from "@/constants/employeesData";
 import { DashboardPieChart } from "./DashboardPieChart";
+import { useDashboardContext } from "@/hooks/useDashboardContext";
 
 export default function EmployeesTable() {
+  const { data } = useDashboardContext();
+
+  if (!data) return null;
+
+  const { employees } = data;
   return (
     <div className="flex flex-col lg:flex-row w-full mt-6 gap-6 2xl:gap-8 lg:mt-6 2xl:mt-8">
       <div className="flex flex-col flex-1 h-full">
@@ -12,7 +17,7 @@ export default function EmployeesTable() {
             Employee Status
           </h2>
         </div>
-        <DataTable columns={columns} data={employeesData} />
+        <DataTable columns={columns} data={employees} />
       </div>
 
       <div className="lg:w-1/3 h-full flex">
