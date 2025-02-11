@@ -1,8 +1,10 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
-import ProtectedRoute from "@/utils/ProtectedRoute";
+import ProtectedRoute from "@/lib/ProtectedRoute";
 import Company from "@/pages/Company";
+import Payroll from "./pages/Payroll";
+import AuthProtectedRoute from "./lib/AuthProtectedRoute";
 
 export const router = createBrowserRouter([
   {
@@ -11,13 +13,25 @@ export const router = createBrowserRouter([
   },
   {
     path: "/auth",
-    element: <Auth />,
+    element: (
+      <AuthProtectedRoute>
+        <Auth />
+      </AuthProtectedRoute>
+    ),
   },
   {
     path: "/dashboard",
     element: (
       <ProtectedRoute>
         <Dashboard />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/payroll",
+    element: (
+      <ProtectedRoute>
+        <Payroll />
       </ProtectedRoute>
     ),
   },
