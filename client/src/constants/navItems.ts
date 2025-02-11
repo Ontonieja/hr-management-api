@@ -14,7 +14,7 @@ const navItems: NavItemsProps[] = [
   },
   {
     title: "Payroll",
-    url: "#",
+    url: "/payroll",
     icon: FileText,
   },
   {

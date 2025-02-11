@@ -29,7 +29,7 @@ export default function isAuth(
 
   jwt.verify(token, process.env.JWT_SECRET as string, (error, decoded) => {
     if (error) {
-      return next(new AppError(UNAUTHORIZED, "Unauthorized", 403));
+      return next(new AppError(UNAUTHORIZED, "Unauthorized", 401));
     }
 
     const payload = decoded as JWTPayloadWithEmail;

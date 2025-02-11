@@ -53,7 +53,7 @@ export function DashboardPieChart() {
   });
 
   return (
-    <Card className="flex flex-col h-full">
+    <Card className="flex flex-col h-full mt-4">
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}

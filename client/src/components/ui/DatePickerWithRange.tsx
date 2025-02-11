@@ -15,9 +15,16 @@ import {
 export function DatePickerWithRange({
   className,
 }: React.HTMLAttributes<HTMLDivElement>) {
+  const startDate: Date = new Date();
+  startDate.setDate(1);
+  const endDate = new Date();
+  endDate.setMonth(endDate.getMonth() + 1);
+  endDate.setDate(0);
+
+  const numberOfDays = endDate.getDate() - startDate.getDate();
   const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(),
-    to: addDays(new Date(), 20),
+    from: startDate,
+    to: addDays(startDate, numberOfDays),
   });
 
   return (

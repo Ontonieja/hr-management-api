@@ -2,6 +2,7 @@ import { DashboardBarChart } from "@/features/dashboard/DashboardBarChart";
 import StatTile from "@/components/StatTile";
 import { DatePickerWithRange } from "@/components/ui/DatePickerWithRange";
 import { useDashboardContext } from "@/hooks/useDashboardContext";
+import SectionHeading from "@/components/ui/SectionHeading";
 
 export default function StatsPanel() {
   const { data } = useDashboardContext();
@@ -11,7 +12,7 @@ export default function StatsPanel() {
   return (
     <>
       <div className="flex justify-between items-center  ">
-        <h2 className="text-xl lg:text-2xl font-extrabold">Job Statistics </h2>
+        <SectionHeading title="Job Statistics" />
         <DatePickerWithRange />
       </div>
       <div className="border border-slate-200 mt-4  rounded-xl ">

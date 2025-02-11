@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import useErrorHandler from "@/hooks/useErrorHandler";
 import { useAuthQueryOptions } from "@/queryOptions/authQueryOptions";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 interface RegisterProps {
   email: string;
@@ -18,17 +19,6 @@ interface RegisterProps {
 interface LoginProps {
   email: string;
   password: string;
-}
-
-interface AuthResponse {
-  token: string;
-  user: {
-    id: number;
-    email: string;
-    firstName: string;
-    lastName: string;
-    role: string;
-  };
 }
 
 export const useLogin = () => {
@@ -73,12 +63,16 @@ export const useUserInfo = () => {
   const dispatch = useDispatch();
 
   const { data, isPending, error } = useQuery(useAuthQueryOptions());
-  if (error) {
-    console.error("Failed to fetch user info:", error);
-    dispatch(logOut());
-  }
 
-  if (data && !isPending) dispatch(setCredentials(data));
+  useEffect(() => {
+    if (error) {
+      dispatch(logOut());
+    }
+
+    if (data && !isPending) {
+      dispatch(setCredentials(data));
+    }
+  }, [data, isPending, error, dispatch]);
 };
 
 const login = (payload: LoginProps) => authRequest(payload, "login");

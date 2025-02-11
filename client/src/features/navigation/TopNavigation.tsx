@@ -28,13 +28,13 @@ export default function TopNavigation() {
   }, [handleClickOutside]);
 
   return (
-    <section className="flex max-md:justify-between items-center text-sm gap-6 border-b pb-4 border-slate-200">
+    <div className="flex max-md:justify-between items-center text-sm gap-6 border-b pb-4 border-slate-200">
       <Logo />
       <MobileMenu open={open} setOpen={setOpen} menuRef={menuRef} />
       <SearchBar />
       <div className="hidden md:flex">
         {user && <AvatarWithName {...user} avatar={avatar} />}
       </div>
-    </section>
+    </div>
   );
 }

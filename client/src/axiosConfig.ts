@@ -28,7 +28,7 @@ api.interceptors.response.use(
       try {
         const { data } = await api.post("/api/v1/auth/refresh");
         store.dispatch(setCredentials({ accessToken: data.accessToken }));
-        console.log("hahaha");
+        console.log("trying to fetch new access token " + data);
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
         return api(originalRequest);
       } catch {
