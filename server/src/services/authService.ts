@@ -124,7 +124,7 @@ export const login = async (req: Request, res: Response) => {
     { email, userId: existingUser.id },
     process.env.JWT_SECRET as string,
     {
-      expiresIn: "15min",
+      expiresIn: "2h",
     }
   );
 
@@ -192,7 +192,7 @@ export const refresh = async (req: Request, res: Response) => {
 export const getUserInfo = async (req: RequestWithUser, res: Response) => {
   const userId = req.userId;
 
-  if (!userId) throw new AppError(UNAUTHORIZED, "Unauthorized", 403);
+  if (!userId) throw new AppError(UNAUTHORIZED, "Unauthorized", 401);
 
   const existingUser = await db.user.findUnique({
     where: { id: userId },
