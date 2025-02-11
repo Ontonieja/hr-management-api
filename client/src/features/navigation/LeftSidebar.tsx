@@ -5,7 +5,7 @@ import { selectIsCollapsed } from "@/store/uiSlice";
 export default function LeftSidebar() {
   const isCollapsed = useSelector(selectIsCollapsed);
   return (
-    <section
+    <div
       className={` ${
         isCollapsed ? "min-w-16" : "lg:w-[15%] w-1/5 pr-4 "
       } max-md:hidden  h-full border-r text-sm border-slate-200`}
@@ -18,6 +18,6 @@ export default function LeftSidebar() {
         General
       </h2>
       <NavItems />
-    </section>
+    </div>
   );
 }
