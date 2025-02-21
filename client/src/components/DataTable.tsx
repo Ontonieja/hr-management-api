@@ -46,8 +46,8 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="rounded-md border flex flex-grow flex-col h-full">
-      <div className="h-full">
+    <div className="rounded-md border flex flex-col h-full">
+      <div className="flex-grow overflow-y-auto">
         <Table className="max-w-full overflow-x-auto">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -68,7 +68,7 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody className="overflow-x-auto">
+          <TableBody className="flex-1">
             {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
