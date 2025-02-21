@@ -32,7 +32,7 @@ export const getDashboardService = async (
       position: true,
       status: true,
       payroll: true,
-      Department: {
+      department: {
         select: {
           name: true,
         },
