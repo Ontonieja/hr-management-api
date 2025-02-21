@@ -29,13 +29,7 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({
 
   return (
     <DashboardContext.Provider value={{ data, isPending, error }}>
-      {isPending ? (
-        <div className="w-full h-full absolute top-0 left-0 flex z-50 justify-center items-center bg-white">
-          <Spinner />
-        </div>
-      ) : (
-        children
-      )}
+      {isPending ? <Spinner /> : children}
     </DashboardContext.Provider>
   );
 };

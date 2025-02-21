@@ -4,7 +4,7 @@ export interface EmployeesProps {
   position: string;
   status: "ACTIVE" | "RESIGNED" | "INACTIVE";
   payroll: number;
-  Department: { name: string };
+  department: { name: string };
   createdAt: string;
   resignedAt: string | null;
 }

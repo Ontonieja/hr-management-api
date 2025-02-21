@@ -4,7 +4,7 @@ export default function SectionWrapper({
   children: React.ReactNode;
 }) {
   return (
-    <section className="flex flex-col w-full h-full max-sm:mt-4">
+    <section className="flex flex-col w-full h-full max-sm:mt-4 relative ">
       {children}
     </section>
   );

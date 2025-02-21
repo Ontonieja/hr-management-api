@@ -8,6 +8,7 @@ interface JWTPayloadWithEmail extends JwtPayload {
 }
 export interface RequestWithUser extends Request {
   userId?: number;
+  companyId?: number;
 }
 
 export default function isAuth(

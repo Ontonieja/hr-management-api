@@ -14,6 +14,11 @@ enum EmployeeStatus {
   RESIGNED
 }
 
+enum PayrollStatus {
+  NEEDSETUP
+  COMPLETED
+}
+
 enum CompanyType {
   TECHNOLOGY
   FINANCE
@@ -58,13 +63,13 @@ model Company {
 
 model User {
   id        Int          @id @default(autoincrement())
-  email     String
+  email     String       @unique
   password  String
   firstName String
   lastName  String
   role      EmployeeRole
   createdAt DateTime     @default(now())
-  Company   Company?
+  company   Company?
 }
 
 model Employee {
@@ -75,15 +80,16 @@ model Employee {
   street       String
   zipCode      String
   position     String
+  avatar       String?
   status       EmployeeStatus
   resignedAt   DateTime?
   payroll      Int
-  Company      Company        @relation(fields: [companyId], references: [id])
+  company      Company        @relation(fields: [companyId], references: [id])
   companyId    Int
   createdAt    DateTime       @default(now())
-  Department   Department     @relation(fields: [departmentId], references: [id])
+  department   Department     @relation(fields: [departmentId], references: [id])
   departmentId Int
-  Salary       Salary[]
+  salary       Salary[]
 }
 
 model Department {
@@ -91,15 +97,19 @@ model Department {
   name      String
   createdAt DateTime   @default(now())
   employees Employee[]
-  Company   Company?   @relation(fields: [companyId], references: [id])
+  company   Company?   @relation(fields: [companyId], references: [id])
   companyId Int?
 }
 
 model Salary {
-  id         Int      @id @default(autoincrement())
+  id         Int           @id @default(autoincrement())
   amount     Int
   date       DateTime
-  employee   Employee @relation(fields: [employeeId], references: [id])
+  status     PayrollStatus
+  bonuses    Int
+  deductions Int
+  totalPaid  Int
+  employee   Employee      @relation(fields: [employeeId], references: [id])
   employeeId Int
-  createdAt  DateTime @default(now())
+  createdAt  DateTime      @default(now())
 }

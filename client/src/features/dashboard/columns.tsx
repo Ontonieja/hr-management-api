@@ -30,7 +30,7 @@ export const columns: ColumnDef<EmployeesProps>[] = [
     cell: ({ row }) => {
       const employee = row.original;
 
-      return <span>{employee.Department.name}</span>;
+      return <span>{employee.department.name}</span>;
     },
   },
   {
