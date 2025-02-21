@@ -49,8 +49,9 @@ export const useRegister = () => {
   return useMutation({
     mutationKey: ["register"],
     mutationFn: register,
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       dispatch(setCredentials(data));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       navigate("/company");
     },
     onError: (error) => {

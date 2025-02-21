@@ -1,6 +1,7 @@
 import { selectIsAuthenticating, selectCurrentUser } from "@/store/authSlice";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function ProtectedRoute({
   children,
@@ -10,6 +11,16 @@ export default function ProtectedRoute({
   const user = useSelector(selectCurrentUser);
   const authenticating = useSelector(selectIsAuthenticating);
 
-  if (!user && !authenticating) return <Navigate to="/auth" replace />;
+  const hasToken = !!localStorage.getItem("accessToken");
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (authenticating && !hasToken) navigate("/auth");
+
+    if (!user && !hasToken) {
+      navigate("/auth", { replace: true });
+    }
+  }, [user, authenticating, hasToken, navigate]);
+
   return children;
 }
